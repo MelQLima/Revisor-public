@@ -1,0 +1,18 @@
+node_modules/
+dist/
+coverage/
+*.log
+
+# Context evolution store (local persisted knowledge)
+data/
+
+# Environment / secrets — never commit
+.env
+.env.local
+.env.*.local
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.tsbuildinfo

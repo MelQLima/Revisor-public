@@ -1,0 +1,32 @@
+{
+  "description": "A valid PR with no findings: a pure refactor with accompanying tests.",
+  "pullRequest": {
+    "repo": { "owner": "acme", "name": "wallet" },
+    "number": 101,
+    "title": "Refactor: extract installmentTotal helper",
+    "body": "Extracts the repeated installment-total calculation into a small pure helper and adds unit tests. No behavior change.",
+    "author": "dev-ana",
+    "baseRef": "main",
+    "headRef": "refactor/installment-total",
+    "headSha": "aaa1111",
+    "draft": false,
+    "changedFiles": [
+      {
+        "filename": "src/billing/installment.ts",
+        "status": "modified",
+        "additions": 6,
+        "deletions": 3,
+        "patch": "@@ -10,7 +10,10 @@ export class InstallmentService {\n-  totalFor(items: Installment[]): number {\n-    let sum = 0;\n-    for (const i of items) sum += i.amountCents;\n-    return sum;\n+  totalFor(items: Installment[]): number {\n+    return installmentTotal(items);\n+  }\n+}\n+export function installmentTotal(items: Installment[]): number {\n+  return items.reduce((sum, i) => sum + i.amountCents, 0);\n }"
+      },
+      {
+        "filename": "src/billing/installment.test.ts",
+        "status": "added",
+        "additions": 12,
+        "deletions": 0,
+        "patch": "@@ -0,0 +1,12 @@\n+import { installmentTotal } from './installment';\n+describe('installmentTotal', () => {\n+  it('sums amountCents', () => {\n+    expect(installmentTotal([{ amountCents: 100 }, { amountCents: 250 }])).toBe(350);\n+  });\n+  it('returns 0 for empty', () => {\n+    expect(installmentTotal([])).toBe(0);\n+  });\n+});"
+      }
+    ],
+    "commits": [{ "sha": "aaa1111", "message": "Extract installmentTotal helper + tests" }]
+  },
+  "expect": { "verdict": "approve", "maxFindings": 0 }
+}

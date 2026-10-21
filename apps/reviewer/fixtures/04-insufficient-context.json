@@ -1,0 +1,25 @@
+{
+  "description": "A PR where context is insufficient: it changes a feature-flag copy string in an area with no business documentation. The reviewer should not invent rules.",
+  "pullRequest": {
+    "repo": { "owner": "acme", "name": "wallet" },
+    "number": 104,
+    "title": "Tweak onboarding banner copy",
+    "body": "Update the onboarding banner text and its default enabled flag.",
+    "author": "dev-diego",
+    "baseRef": "main",
+    "headRef": "chore/onboarding-copy",
+    "headSha": "ddd4444",
+    "draft": false,
+    "changedFiles": [
+      {
+        "filename": "src/onboarding/banner.ts",
+        "status": "modified",
+        "additions": 2,
+        "deletions": 2,
+        "patch": "@@ -3,6 +3,6 @@ export const onboardingBanner = {\n-  title: 'Welcome',\n-  enabled: false,\n+  title: 'Welcome to Acme',\n+  enabled: true,\n };"
+      }
+    ],
+    "commits": [{ "sha": "ddd4444", "message": "Onboarding copy tweak" }]
+  },
+  "expect": { "maxFindings": 2 }
+}

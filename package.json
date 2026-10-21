@@ -1,0 +1,35 @@
+{
+  "name": "triple-r",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Triple R — an AI platform: Reviewer, Resolver, Reinforcement over shared Business Knowledge and a shared LLM gateway",
+  "type": "module",
+  "engines": {
+    "node": ">=18.8.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @triple-r/reviewer",
+    "start": "npm run start -w @triple-r/reviewer",
+    "build": "npm run build --workspaces --if-present",
+    "review": "npm run review -w @triple-r/reviewer --",
+    "context:review": "npm run context:review -w @triple-r/reviewer --",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "format": "prettier --write \"{apps,packages}/**/*.ts\"",
+    "test": "npm test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/parser": "^7.16.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.3",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.5"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "description": "A merged PR introducing durable business knowledge: external identifiers accepted as a reconciliation key.",
+  "pullRequest": {
+    "repo": { "owner": "acme", "name": "wallet" },
+    "number": 421,
+    "title": "Allow payment reconciliation using external identifier",
+    "body": "Reconciliation can now match a payment by its external broker identifier when the internal payment id is missing. This is a deliberate domain change requested by finance to reduce the unmatched backlog.",
+    "author": "dev-bruno",
+    "baseRef": "main",
+    "headRef": "feature/external-id-reconciliation",
+    "headSha": "e1d0c0f",
+    "merged": true,
+    "mergeCommitSha": "merge421abcdef0123456789",
+    "changedFiles": [
+      {
+        "filename": "src/payment/reconciliation.ts",
+        "status": "modified",
+        "additions": 10,
+        "deletions": 2,
+        "patch": "@@ -40,7 +40,15 @@ export class ReconciliationService {\n   async match(payment: Payment): Promise<Installment | null> {\n-    return this.byInternalId(payment.internalId);\n+    const byInternal = await this.byInternalId(payment.internalId);\n+    if (byInternal) return byInternal;\n+    // NEW: fall back to the broker's external identifier as a reconciliation key\n+    if (payment.externalIdentifier) {\n+      return this.byExternalIdentifier(payment.externalIdentifier);\n+    }\n+    return null;\n   }"
+      },
+      {
+        "filename": "tests/reconciliation.test.ts",
+        "status": "modified",
+        "additions": 14,
+        "deletions": 0,
+        "patch": "@@ +14,0 @@\n+  it('reconciles by external identifier when internal id is missing', async () => {\n+    const match = await service.match({ internalId: null, externalIdentifier: 'MP-999' });\n+    expect(match).not.toBeNull();\n+  });"
+      }
+    ],
+    "commits": [
+      { "sha": "c1deadbeef01", "message": "Accept external identifier as a reconciliation key" }
+    ]
+  }
+}

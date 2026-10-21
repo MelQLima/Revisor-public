@@ -1,0 +1,25 @@
+{
+  "description": "A PR that mentions 'revert' loosely but is NOT a revert. Expect low revert confidence (not treated as a revert) and no fabricated original PR.",
+  "pullRequest": {
+    "repo": { "owner": "acme", "name": "wallet" },
+    "number": 512,
+    "title": "Add undo/revert button to the payments UI",
+    "body": "Adds a client-side revert button so operators can undo the last local edit before submitting. No backend/domain change.",
+    "author": "dev-diego",
+    "baseRef": "main",
+    "headRef": "feature/ui-revert-button",
+    "headSha": "u512aa",
+    "merged": true,
+    "mergeCommitSha": "merge512zzyyxx",
+    "changedFiles": [
+      {
+        "filename": "src/ui/payments/RevertButton.tsx",
+        "status": "added",
+        "additions": 20,
+        "deletions": 0,
+        "patch": "@@ +0,0 +1,20 @@\n+export function RevertButton() { /* local undo only */ return null; }"
+      }
+    ],
+    "commits": [{ "sha": "u512c1", "message": "Add revert button component" }]
+  }
+}

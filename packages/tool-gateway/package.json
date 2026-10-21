@@ -1,0 +1,23 @@
+{
+  "name": "@triple-r/tool-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Triple R tool gateway — the single choke point that enforces permissions, write-confirmation, idempotency, and infrastructure-level audit for every tool call.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@triple-r/shared-types": "*",
+    "@triple-r/observability": "*"
+  },
+  "devDependencies": {
+    "@triple-r/auth": "*"
+  }
+}

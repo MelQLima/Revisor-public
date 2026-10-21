@@ -1,0 +1,32 @@
+{
+  "name": "@triple-r/reviewer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Triple R Reviewer — business-aware AI GitHub Pull Request reviewer",
+  "type": "module",
+  "engines": {
+    "node": ">=18.8.0"
+  },
+  "scripts": {
+    "dev": "tsx watch src/infrastructure/http/main.ts",
+    "start": "node dist/infrastructure/http/main.js",
+    "build": "tsc -p tsconfig.build.json",
+    "review": "tsx src/cli/review.ts",
+    "context:review": "tsx src/cli/context-evolution.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext .ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@triple-r/observability": "*",
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@octokit/rest": "^20.1.1",
+    "@octokit/webhooks": "^13.3.0",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.28.1",
+    "pino": "^9.4.0",
+    "pino-pretty": "^11.2.2",
+    "zod": "^3.23.8"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@triple-r/shared-types",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Triple R cross-cutting contracts — agents, tools, tool results, authorization, audit. No runtime dependencies.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  }
+}

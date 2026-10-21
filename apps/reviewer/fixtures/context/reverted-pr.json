@@ -1,0 +1,40 @@
+{
+  "description": "A revert of PR #421. Context must deactivate the introduced knowledge while preserving history (current + historical).",
+  "seedContext": [
+    {
+      "topic": "payment-external-identifier-reconciliation",
+      "category": "BUSINESS_RULE",
+      "content": "External payment identifiers may be used as a reconciliation key when the internal payment id is missing.",
+      "summary": "External identifiers accepted for reconciliation.",
+      "prNumber": 421,
+      "prTitle": "Allow payment reconciliation using external identifier"
+    }
+  ],
+  "pullRequest": {
+    "repo": { "owner": "acme", "name": "wallet" },
+    "number": 450,
+    "title": "Revert \"Allow payment reconciliation using external identifier\"",
+    "body": "Reverts #421 — external-identifier reconciliation caused mis-reconciliation in production (incident INC-88). Rolling back.",
+    "author": "dev-erika",
+    "baseRef": "main",
+    "headRef": "revert-421-feature/external-id-reconciliation",
+    "headSha": "r4500ff",
+    "merged": true,
+    "mergeCommitSha": "merge450xyz9876543210",
+    "changedFiles": [
+      {
+        "filename": "src/payment/reconciliation.ts",
+        "status": "modified",
+        "additions": 2,
+        "deletions": 10,
+        "patch": "@@ -40,15 +40,7 @@ export class ReconciliationService {\n   async match(payment: Payment): Promise<Installment | null> {\n-    const byInternal = await this.byInternalId(payment.internalId);\n-    if (byInternal) return byInternal;\n-    if (payment.externalIdentifier) {\n-      return this.byExternalIdentifier(payment.externalIdentifier);\n-    }\n-    return null;\n+    return this.byInternalId(payment.internalId);\n   }"
+      }
+    ],
+    "commits": [
+      {
+        "sha": "rc450aa",
+        "message": "Revert \"Allow payment reconciliation using external identifier\"\n\nThis reverts commit c1deadbeef01."
+      }
+    ]
+  }
+}

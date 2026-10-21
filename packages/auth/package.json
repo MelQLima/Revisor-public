@@ -1,0 +1,19 @@
+{
+  "name": "@triple-r/auth",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Triple R authorization — per-agent (and later per-user) tool grants.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@triple-r/shared-types": "*"
+  }
+}

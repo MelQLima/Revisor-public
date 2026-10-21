@@ -1,0 +1,33 @@
+{
+  "description": "A PR containing a low-confidence POTENTIAL issue: a reconciliation query change that MIGHT allow reverted payments through, but no direct evidence proves the bad state is reachable. The reviewer should phrase this conditionally and not block on it.",
+  "pullRequest": {
+    "repo": { "owner": "acme", "name": "wallet" },
+    "number": 105,
+    "title": "Broaden reconciliation candidate query",
+    "body": "Include more payments in the reconciliation candidate set to reduce unmatched backlog.",
+    "author": "dev-erika",
+    "baseRef": "main",
+    "headRef": "feature/broaden-reconciliation",
+    "headSha": "eee5555",
+    "draft": false,
+    "changedFiles": [
+      {
+        "filename": "src/reconciliation/candidates.ts",
+        "status": "modified",
+        "additions": 3,
+        "deletions": 3,
+        "patch": "@@ -12,9 +12,9 @@ export class ReconciliationCandidates {\n   async select(groupId: string): Promise<Payment[]> {\n-    return this.paymentRepo.find({\n-      where: { groupId, status: 'received' },\n-    });\n+    return this.paymentRepo.find({\n+      where: { groupId },\n+    });\n   }"
+      }
+    ],
+    "commits": [{ "sha": "eee5555", "message": "Broaden reconciliation query" }]
+  },
+  "relevantCode": [
+    {
+      "filename": "src/reconciliation/candidates.ts",
+      "startLine": 12,
+      "reason": "the changed selector; note the removed status filter",
+      "content": "export class ReconciliationCandidates {\n  constructor(private readonly paymentRepo: PaymentRepository) {}\n  async select(groupId: string): Promise<Payment[]> {\n    return this.paymentRepo.find({ where: { groupId } });\n  }\n}"
+    }
+  ],
+  "expect": { "maxFindings": 3 }
+}

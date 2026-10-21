@@ -1,0 +1,27 @@
+{
+  "name": "@triple-r/tools",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Triple R semantic connectors (§7/§8). Each exposes the smallest useful tools over an external system; every connector ships an in-memory fake alongside its real seam.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./bigquery": "./src/bigquery/index.ts",
+    "./slack": "./src/slack/index.ts"
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@triple-r/shared-types": "*",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@triple-r/auth": "*",
+    "@triple-r/tool-gateway": "*",
+    "@triple-r/observability": "*"
+  }
+}

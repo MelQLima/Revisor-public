@@ -1,0 +1,25 @@
+{
+  "description": "A technical-only merged PR (logging + refactor, identical behavior). Expect NO_CONTEXT_CHANGE.",
+  "pullRequest": {
+    "repo": { "owner": "acme", "name": "wallet" },
+    "number": 500,
+    "title": "Refactor: extract reconciliation logger and tidy imports",
+    "body": "Pure refactor: extract a logger helper and reorder imports. No behavior change; all existing tests pass unchanged.",
+    "author": "dev-ana",
+    "baseRef": "main",
+    "headRef": "chore/reconciliation-logging",
+    "headSha": "t500aa",
+    "merged": true,
+    "mergeCommitSha": "merge500aabbccdd",
+    "changedFiles": [
+      {
+        "filename": "src/payment/reconciliation.ts",
+        "status": "modified",
+        "additions": 4,
+        "deletions": 4,
+        "patch": "@@ -1,6 +1,6 @@\n-import { A } from './a';\n-import { B } from './b';\n+import { B } from './b';\n+import { A } from './a';\n@@ -50,7 +50,7 @@ export class ReconciliationService {\n-    console.log('matching', payment.id);\n+    this.logger.debug({ paymentId: payment.id }, 'matching');\n   }"
+      }
+    ],
+    "commits": [{ "sha": "t500c1", "message": "Refactor logging, no behavior change" }]
+  }
+}

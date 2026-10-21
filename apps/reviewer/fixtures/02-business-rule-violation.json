@@ -1,0 +1,33 @@
+{
+  "description": "A PR violating a business rule: reconciles/associates payments by payer email, removing the CPF identity validation required by docs/ai/domain/payments.md.",
+  "pullRequest": {
+    "repo": { "owner": "acme", "name": "wallet" },
+    "number": 102,
+    "title": "Auto-associate incoming payments to members by payer email",
+    "body": "Speeds up reconciliation by auto-associating a payment to a member using the payer email, skipping the manual identity step.",
+    "author": "dev-bruno",
+    "baseRef": "main",
+    "headRef": "feature/auto-associate-by-email",
+    "headSha": "bbb2222",
+    "draft": false,
+    "changedFiles": [
+      {
+        "filename": "src/payments/payment.service.ts",
+        "status": "modified",
+        "additions": 5,
+        "deletions": 4,
+        "patch": "@@ -138,10 +138,11 @@ export class PaymentService {\n   async associate(payment: Payment): Promise<void> {\n-    // identity must be validated before association\n-    await this.personService.validateIdentity(payment.payerCpf);\n-    const person = await this.personRepo.findByCpf(payment.payerCpf);\n-    payment.personId = person.id;\n+    // fast path: associate by email to speed up reconciliation\n+    const person = await this.personRepo.findByEmail(payment.payerEmail);\n+    payment.personId = person.id;\n+    await this.paymentRepo.save(payment);\n   }"
+      }
+    ],
+    "commits": [{ "sha": "bbb2222", "message": "Associate payments by email" }]
+  },
+  "relevantCode": [
+    {
+      "filename": "src/person/person.service.ts",
+      "startLine": 20,
+      "reason": "existing identity validation the PR bypasses",
+      "content": "export class PersonService {\n  /** Validates that the payer CPF matches a known Person. Required before any\n   *  financial association (see docs/ai/domain/payments.md#identity-invariant). */\n  async validateIdentity(cpf: string): Promise<void> {\n    const person = await this.personRepo.findByCpf(cpf);\n    if (!person) throw new IdentityError('CPF does not match a known person');\n  }\n}"
+    }
+  ],
+  "expect": { "minFindings": 1 }
+}
