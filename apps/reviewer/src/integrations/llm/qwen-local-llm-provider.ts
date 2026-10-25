@@ -28,6 +28,7 @@ import type { LLMProvider } from './llm-provider.js';
 import { assignFindingIds, coerceValidation } from './normalize.js';
 import { toProposal } from './context-normalize.js';
 import { extractJsonObject } from './json-extract.js';
+import { recordTokenUsage } from './traced-llm-provider.js';
 
 /**
  * Local, self-hosted reviewer — the PRIMARY provider.
@@ -70,6 +71,7 @@ export interface QwenLocalLLMOptions {
 
 interface ChatCompletionResponse {
   choices?: Array<{ message?: { content?: string | null } }>;
+  usage?: { prompt_tokens?: number; completion_tokens?: number };
 }
 
 /** Warn once above this estimate; Ollama's default context (~2-4K) truncates here. */
@@ -201,6 +203,11 @@ export class QwenLocalLLMProvider implements LLMProvider {
     }
 
     const data = (await response.json()) as ChatCompletionResponse;
+    recordTokenUsage({
+      model: this.options.model,
+      inputTokens: data.usage?.prompt_tokens,
+      outputTokens: data.usage?.completion_tokens,
+    });
     const content = data.choices?.[0]?.message?.content;
     return extractJsonObject(content);
   }

@@ -1,3 +1,4 @@
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import type { ContextProvider, ContextResult } from '../domain/context.js';
 import type { CodeSnippet, PullRequest, RepoRef } from '../domain/pull-request.js';
 import type { ReviewInput } from '../domain/review-input.js';
@@ -12,6 +13,8 @@ import { buildContextQuery } from '../context/query-builder.js';
 import { formatReviewBody, toInlineComments } from '../review/review-formatter.js';
 import { applyValidation } from './apply-validation.js';
 import { collectRelevantCode } from './relevant-code.js';
+
+const tracer = trace.getTracer('revisor');
 
 export interface ReviewPipelineDeps {
   github: GitHubClient;
@@ -55,7 +58,43 @@ export interface ReviewOutcome {
 export class ReviewPipeline {
   constructor(private readonly deps: ReviewPipelineDeps) {}
 
+  /**
+   * Review one PR. Wrapped in a root OpenTelemetry span so the analysis and
+   * validation passes (and their HTTP calls) show up as one trace per review.
+   */
   async review(target: ReviewTarget, options: ReviewOptions = {}): Promise<ReviewOutcome> {
+    const correlationId = target.correlationId ?? newCorrelationId();
+    return tracer.startActiveSpan(
+      'review.pull_request',
+      {
+        attributes: {
+          'revisor.correlation_id': correlationId,
+          'vcs.repository.name': `${target.repo.owner}/${target.repo.name}`,
+          'vcs.pull_request.number': target.pullNumber,
+        },
+      },
+      async (span) => {
+        try {
+          const outcome = await this.runReview({ ...target, correlationId }, options);
+          span.setAttributes({
+            'revisor.review.verdict': outcome.result.verdict,
+            'revisor.review.findings': outcome.result.findings.length,
+            'revisor.review.rejected': outcome.result.rejected.length,
+            'revisor.review.posted': outcome.posted,
+          });
+          return outcome;
+        } catch (err) {
+          span.recordException(err as Error);
+          span.setStatus({ code: SpanStatusCode.ERROR, message: (err as Error).message });
+          throw err;
+        } finally {
+          span.end();
+        }
+      },
+    );
+  }
+
+  private async runReview(target: ReviewTarget, options: ReviewOptions): Promise<ReviewOutcome> {
     const correlationId = target.correlationId ?? newCorrelationId();
     const log = withCorrelation(this.deps.logger, correlationId);
     log.info(

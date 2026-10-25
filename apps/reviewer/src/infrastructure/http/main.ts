@@ -1,3 +1,4 @@
+import { startTracing } from '@triple-r/observability';
 import { loadConfig } from '../config/config.js';
 import { createLogger } from '../logging/logger.js';
 import { buildServer } from './server.js';
@@ -9,6 +10,8 @@ import { buildServer } from './server.js';
 async function main(): Promise<void> {
   const config = loadConfig();
   const logger = createLogger({ level: config.logLevel });
+  // Opt-in: only starts when OTEL_EXPORTER_OTLP_ENDPOINT is set (e.g. docker compose).
+  const tracing = startTracing('revisor');
 
   const app = await buildServer(config, logger);
   await app.listen({ port: config.port, host: '0.0.0.0' });
@@ -19,6 +22,7 @@ async function main(): Promise<void> {
       dryRun: config.policy.dryRun,
       githubConfigured: Boolean(config.github.token),
       webhookConfigured: Boolean(config.github.webhookSecret),
+      tracing: tracing.enabled,
     },
     `Revisor listening on :${config.port}`,
   );
@@ -26,7 +30,10 @@ async function main(): Promise<void> {
   for (const signal of ['SIGINT', 'SIGTERM'] as const) {
     process.on(signal, () => {
       logger.info(`Received ${signal}, shutting down`);
-      void app.close().then(() => process.exit(0));
+      void app
+        .close()
+        .then(() => tracing.shutdown())
+        .then(() => process.exit(0));
     });
   }
 }
