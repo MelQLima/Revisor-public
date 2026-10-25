@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { resolve } from 'node:path';
-import { loadConfig } from '../infrastructure/config/config.js';
-import { createLogger } from '../infrastructure/logging/logger.js';
+import { startTracing } from '@triple-r/observability';
+import { loadConfig, type AppConfig } from '../infrastructure/config/config.js';
+import { createLogger, type Logger } from '../infrastructure/logging/logger.js';
 import { ReviewPipeline } from '../application/review-pipeline.js';
 import {
   createContextProvider,
@@ -32,7 +33,21 @@ async function main(): Promise<void> {
 
   const config = loadConfig();
   const logger = createLogger({ level: asJson ? 'warn' : config.logLevel });
+  // Opt-in tracing: set OTEL_EXPORTER_OTLP_ENDPOINT to see this review in Jaeger.
+  const tracing = startTracing('revisor-cli');
+  try {
+    await runReview(fixturePath, asJson, config, logger);
+  } finally {
+    await tracing.shutdown();
+  }
+}
 
+async function runReview(
+  fixturePath: string,
+  asJson: boolean,
+  config: AppConfig,
+  logger: Logger,
+): Promise<void> {
   const fixture = await loadFixture(resolve(fixturePath));
   const github = new FixtureGitHubClient(fixture, logger);
   const context = createContextProvider(config);

@@ -16,17 +16,23 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "serve": "node --import tsx src/infrastructure/http/main.ts"
   },
   "dependencies": {
     "@triple-r/observability": "*",
     "@anthropic-ai/sdk": "^0.32.1",
     "@octokit/rest": "^20.1.1",
     "@octokit/webhooks": "^13.3.0",
+    "@opentelemetry/api": "^1.9.0",
     "dotenv": "^16.4.5",
     "fastify": "^4.28.1",
     "pino": "^9.4.0",
     "pino-pretty": "^11.2.2",
     "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@opentelemetry/context-async-hooks": "^1.30.0",
+    "@opentelemetry/sdk-trace-base": "^1.30.0"
   }
 }

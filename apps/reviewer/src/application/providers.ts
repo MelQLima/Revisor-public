@@ -13,6 +13,7 @@ import type { LLMProvider } from '../integrations/llm/llm-provider.js';
 import { ClaudeLLMProvider } from '../integrations/llm/claude-llm-provider.js';
 import { HeuristicLLMProvider } from '../integrations/llm/heuristic-llm-provider.js';
 import { QwenLocalLLMProvider } from '../integrations/llm/qwen-local-llm-provider.js';
+import { TracedLLMProvider } from '../integrations/llm/traced-llm-provider.js';
 import { NullHistoryProvider, type HistoryProvider } from '../integrations/history/history-provider.js';
 import { FileContextStore } from '../infrastructure/context-store/file-context-store.js';
 import { HeuristicRevertDetector } from '../integrations/github/revert-detector.js';
@@ -100,6 +101,11 @@ export function createHistoryProvider(_config: AppConfig): HistoryProvider {
  *   - `heuristic`: offline rule-based reviewer (no model, no network).
  */
 export function createLLMProvider(config: AppConfig, logger: Logger): LLMProvider {
+  // Every pass gets an OpenTelemetry span (a no-op when tracing is off).
+  return new TracedLLMProvider(createBaseLLMProvider(config, logger));
+}
+
+function createBaseLLMProvider(config: AppConfig, logger: Logger): LLMProvider {
   switch (config.llm.provider) {
     case 'heuristic':
       logger.warn('LLM_PROVIDER=heuristic — using the offline rule-based reviewer (not a real AI review)');

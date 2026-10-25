@@ -31,6 +31,7 @@ import {
 import type { LLMProvider } from './llm-provider.js';
 import { assignFindingIds, coerceValidation } from './normalize.js';
 import { toProposal } from './context-normalize.js';
+import { recordTokenUsage } from './traced-llm-provider.js';
 
 export interface ClaudeLLMOptions {
   apiKey: string;
@@ -135,6 +136,12 @@ export class ClaudeLLMProvider implements LLMProvider {
       tools: [{ name: toolName, description: `Return the structured result.`, input_schema: schema }],
       tool_choice: { type: 'tool', name: toolName },
       messages: [{ role: 'user', content: prompt }],
+    });
+
+    recordTokenUsage({
+      model,
+      inputTokens: response.usage?.input_tokens,
+      outputTokens: response.usage?.output_tokens,
     });
 
     const toolUse = response.content.find(

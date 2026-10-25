@@ -2,7 +2,7 @@
   "name": "@triple-r/observability",
   "version": "0.1.0",
   "private": true,
-  "description": "Triple R shared observability — structured logging + correlation ids. No domain vocabulary.",
+  "description": "Triple R shared observability — structured logging, correlation ids and OpenTelemetry tracing. No domain vocabulary.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -13,6 +13,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.57.0",
+    "@opentelemetry/instrumentation-undici": ">=0.10.0 <1",
+    "@opentelemetry/sdk-node": "^0.57.0",
     "pino": "^9.4.0",
     "pino-pretty": "^11.2.2"
   }
